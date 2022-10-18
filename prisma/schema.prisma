@@ -21,4 +21,6 @@ model votes {
   startDateTime DateTime    @db.Date
   title         String
   voters        String[]
+  createdAt     DateTime    @default(now()) @map("createdAt") @db.Date
+  code          String      @unique
 }

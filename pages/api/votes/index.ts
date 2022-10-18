@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../lib/prisma";
 import { unstable_getServerSession } from "next-auth/next"
 import { authOptions } from "../auth/[...nextauth]"
+import { code } from "../../../lib/code";
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
     const session = await unstable_getServerSession(req, res, authOptions)
@@ -18,8 +19,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
                 endDateTime: req.body.endDate,
                 startDateTime: req.body.startDate,
                 title: req.body.title,
-                voters: req.body.voters || undefined,
+                voters: undefined,
                 publisher: req.body.publisher,
+                code: code(6),
             }
         })
 
@@ -35,5 +37,4 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     }
 
     return res.status(400).json("Method not allowed.")
-
 }

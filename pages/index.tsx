@@ -4,9 +4,11 @@ import Menu from "../components/Menu";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import useVotes from "../lib/useVotes";
+
 const Home: NextPage = () => {
   const { data: session } = useSession();
-
+  const { votes } = useVotes();
   return (
     <div>
       <Head>
@@ -26,6 +28,7 @@ const Home: NextPage = () => {
           alt="Picture of the header"
           width={300}
           height={300}
+          priority
           objectPosition="center"
           objectFit="contain"
         />
@@ -62,19 +65,31 @@ const Home: NextPage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="p-5 text-left">1</td>
-                <td className="p-5 text-left">
-                  Pemilihan Ketua Umum Komunitas
-                </td>
-                <td className="p-5 text-left">Fahrezi (76%) vs Adha (24%)</td>
-                <td className="p-5 text-left font-bold">BVQXKRW</td>
-              </tr>
+              {votes && votes.length > 0
+                ? votes.map((vote: any, index: number) => (
+                    <tr key={index}>
+                      <td className="p-5 text-left">{index + 1}</td>
+                      <td className="p-5 text-left">{vote.title}</td>
+                      <td className="p-5 text-left">
+                        {vote.candidates.map(
+                          (candidate: any, index: number) => (
+                            <span key={index}>
+                              {candidate.name +
+                                (index < vote.candidates.length - 1
+                                  ? " vs "
+                                  : "")}
+                            </span>
+                          )
+                        )}
+                      </td>
+                      <td className="p-5 text-left font-bold">{vote.code}</td>
+                    </tr>
+                  ))
+                : null}
             </tbody>
           </table>
         </div>
       )}
-
       {/* End List Voting */}
     </div>
   );

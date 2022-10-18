@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import Button from "../../components/Button";
 import Form from "../../components/Form";
 import RestrictedPage from "../../components/page/RestrictedPage";
@@ -11,9 +12,29 @@ export default function Participate() {
 
   const { data: session } = useSession();
 
+  const [code, setCode] = useState("");
+
   if (!session) {
     return <RestrictedPage />;
   }
+  const handleSubmit = async () => {
+    if (code === "") {
+      alert("Please enter a code");
+      return;
+    }
+    await fetch("/api/votes/" + code, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data) {
+          alert("Invalid Code");
+          return;
+        }
+        router.push("/participate/" + code);
+      });
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-screen space-y-5 container mx-auto">
       <Head>
@@ -33,18 +54,19 @@ export default function Participate() {
       </h2>
       <Form
         placeholder="Masukkan Kode Voting"
-        value={""}
-        onChange={() => {}}
+        value={code}
+        onChange={setCode}
         className="w-1/3 mt-3"
       />
       <Button
-        onClick={() => {
-          router.push("/participate/kode");
-        }}
+        onClick={handleSubmit}
         text="Lanjutkan"
         size="lg"
         className="w-1/3"
       />
+      <button className="text-sm" onClick={() => router.push("/")}>
+        Kembali
+      </button>
     </div>
   );
 }

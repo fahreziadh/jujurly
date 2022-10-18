@@ -21,7 +21,6 @@ export default function NewVote() {
   const [endDate, setEndDate] = useState(new Date()); //tanggal selesai
   const [candidates, setCandidates] = useState<Candidate[]>([]); //list kandidat
   const [title, setTitle] = useState(""); //judul vote
-  const [voters, setVoters] = useState<string | null>(null); //list pemilih (email)
 
   //Jika user belum login, maka akan diarahkan ke halaman login
   if (!session) return <RestrictedPage />;
@@ -71,10 +70,6 @@ export default function NewVote() {
       alert("Nama Kandidat tidak boleh kosong");
       return;
     }
-    if (voters == "") {
-      alert("Pemilih tidak boleh kosong");
-      return;
-    }
 
     //Mengirim data ke API
     fetch("/api/votes", {
@@ -87,7 +82,6 @@ export default function NewVote() {
         startDate,
         endDate,
         candidates,
-        voters,
         publisher: session.user.email,
       }),
     })
@@ -174,47 +168,6 @@ export default function NewVote() {
           </div>
           {/* End Kandidat */}
 
-          {/* Pemilih */}
-          {/* <div className="mt-16">
-            <span className="font-medium text-xl ">List Pemilih </span>
-            <span
-              className={`text-sm ml-10 py-2 px-3 font-medium cursor-pointer ${
-                voters === null
-                  ? "bg-zinc-900 text-white"
-                  : "bg-zinc-100 text-zinc-700"
-              }`}
-              onClick={() => setVoters(null)}
-            >
-              Semua Orang
-            </span>
-            <span
-              className={`text-sm  py-2 px-3 font-medium cursor-pointer ${
-                voters != null
-                  ? "bg-zinc-900 text-white"
-                  : "bg-zinc-100 text-zinc-700"
-              }`}
-              onClick={() => setVoters("")}
-            >
-              Orang Tertentu
-            </span>
-          </div>
-          {voters != null ? (
-            <div className="mt-5">
-              <label className="text-sm">List Email Pemilih</label>
-              <textarea
-                className="w-full border bg-zinc-100 border-transparent py-2 px-3 mt-1"
-                placeholder="List Email dipisahkan oleh tanda koma / *,* Contoh : user1@gmail.com,user2@gmail.com"
-                value={voters}
-                onChange={(e) => setVoters(e.target.value)}
-              />
-            </div>
-          ) : (
-            <div className="p-5 bg-zinc-100 mt-5 font-medium text-zinc-600">
-              Semua Orang Dengan Kode/URL ini akan dapat melakukan voting 🌻
-            </div>
-          )} */}
-
-          {/* End Pemilih */}
           <div className="py-10 text-right">
             <Button text="Buat Voting👍🏻" size="lg" onClick={createVote} />
           </div>
