@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type Candidate {
+  name  String
+  key   Int
+  title String
+}
+
+model votes {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  candidates    Candidate[]
+  endDateTime   DateTime    @db.Date
+  publisher     String
+  startDateTime DateTime    @db.Date
+  title         String
+  voters        String[]
+}

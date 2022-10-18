@@ -23,7 +23,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "pages/api/auth/[...nextauth].tsx"
+    "pages/api/auth/[...nextauth].tsx",
+    "lib/prisma.ts"
   ],
   "exclude": [
     "node_modules"

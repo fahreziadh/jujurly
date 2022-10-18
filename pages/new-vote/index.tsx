@@ -1,3 +1,225 @@
+import { signIn, useSession } from "next-auth/react";
+import Head from "next/head";
+import Image from "next/image";
+import { useState } from "react";
+import ReactDatePicker from "react-datepicker";
+import Button from "../../components/Button";
+import Menu from "../../components/Menu";
+import "react-datepicker/dist/react-datepicker.css";
+import CandidateForm from "../../components/CandidateForm";
+import AddCandidateButton from "../../components/AddCandidateButton";
+import { useRouter } from "next/router";
+import Form from "../../components/Form";
+import RestrictedPage from "../../components/page/RestrictedPage";
+
 export default function NewVote() {
-  return "New Vote";
+  const { data: session } = useSession();
+
+  const router = useRouter();
+
+  const [startDate, setStartDate] = useState(new Date()); // tanggal mulai
+  const [endDate, setEndDate] = useState(new Date()); //tanggal selesai
+  const [candidates, setCandidates] = useState<Candidate[]>([]); //list kandidat
+  const [title, setTitle] = useState(""); //judul vote
+  const [voters, setVoters] = useState<string | null>(null); //list pemilih (email)
+
+  //Jika user belum login, maka akan diarahkan ke halaman login
+  if (!session) return <RestrictedPage />;
+
+  const addCandidateForm = () => {
+    const newCandidate: Candidate = {
+      name: "",
+      key: candidates.length + 1,
+      title: "",
+    };
+    setCandidates([...candidates, newCandidate]);
+  };
+
+  const removeCandidateForm = (key: number) => {
+    //remove candidate selected by key and re arrange the key order
+    const newCandidates = candidates.filter(
+      (candidate) => candidate.key !== key
+    );
+    newCandidates.forEach((candidate, index) => {
+      candidate.key = index + 1;
+    });
+
+    setCandidates(newCandidates);
+  };
+
+  const submitCandidate = (candidate: Candidate) => {
+    setCandidates(
+      candidates.map((c) => (c.key === candidate.key ? candidate : c))
+    );
+  };
+
+  const createVote = () => {
+    //Validasi
+    if (title === "") {
+      alert("Judul tidak boleh kosong");
+      return;
+    }
+    if (candidates.length < 2) {
+      alert("Minimal ada 2 kandidat");
+      return;
+    }
+    if (startDate > endDate) {
+      alert("Tanggal mulai tidak boleh lebih besar dari tanggal selesai");
+      return;
+    }
+    if (candidates.some((c) => c.name === "")) {
+      alert("Nama Kandidat tidak boleh kosong");
+      return;
+    }
+    if (voters == "") {
+      alert("Pemilih tidak boleh kosong");
+      return;
+    }
+
+    //Mengirim data ke API
+    fetch("/api/votes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        startDate,
+        endDate,
+        candidates,
+        voters,
+        publisher: session.user.email,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        router.push("/new-vote/success");
+      });
+  };
+
+  //Jika user sudah login, maka akan ditampilkan halaman new-vote
+  return (
+    <div>
+      <Head>
+        <title>Voting Baru</title>
+      </Head>
+      <Menu />
+
+      <div className="container mx-auto py-10">
+        <Image
+          src={"/images/vote.png"}
+          alt="new-vote"
+          width={200}
+          height={200}
+          objectFit="contain"
+        />
+        <h1 className="text-4xl font-bold ">Buat Voting Baru</h1>
+        <h2 className="text-zinc-700 mt-3">
+          Silahkan masukkan data yang dibutuhkan sebelum membuat vote online
+        </h2>
+
+        <form className="flex flex-col">
+          {/* Detail Voting */}
+          <div className="space-y-5">
+            <h3 className="font-medium text-xl mt-10">Detail Voting</h3>
+            <div className="flex flex-col">
+              <label className="text-sm">Judul</label>
+              <Form
+                onChange={setTitle}
+                value={title}
+                placeholder="Contoh : Voting Calon Gubernur Sumatera Utara"
+                className="w-1/2"
+              />
+            </div>
+            <div className="flex flex-col w-2/3">
+              <label className="text-sm">Kapan dimulai?</label>
+              <div className="inline-flex">
+                <ReactDatePicker
+                  showTimeSelect
+                  dateFormat="Pp"
+                  selected={startDate}
+                  minDate={new Date()}
+                  onChange={(date) => date && setStartDate(date)}
+                  className="w-full border bg-zinc-100 border-transparent py-2 px-3"
+                />
+                <span className="text-sm text-center p-3">sampai</span>
+                <ReactDatePicker
+                  dateFormat="Pp"
+                  showTimeSelect
+                  selected={endDate}
+                  minDate={startDate}
+                  onChange={(date) => date && setEndDate(date)}
+                  className="w-full border bg-zinc-100 border-transparent py-2 px-3"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col w-1/2">
+              <label className="text-sm"></label>
+            </div>
+          </div>
+          {/* End Detail Voting */}
+
+          {/* Kandidat */}
+          <h3 className="font-medium text-xl mt-10">Kandidat</h3>
+          <div className="grid gap-4 grid-cols-4 mt-5">
+            {candidates.map((candidate, index) => (
+              <CandidateForm
+                key={index}
+                candidate={candidate}
+                submitCandidate={submitCandidate}
+                removeCandidateForm={removeCandidateForm}
+              />
+            ))}
+            <AddCandidateButton onClick={addCandidateForm} />
+          </div>
+          {/* End Kandidat */}
+
+          {/* Pemilih */}
+          {/* <div className="mt-16">
+            <span className="font-medium text-xl ">List Pemilih </span>
+            <span
+              className={`text-sm ml-10 py-2 px-3 font-medium cursor-pointer ${
+                voters === null
+                  ? "bg-zinc-900 text-white"
+                  : "bg-zinc-100 text-zinc-700"
+              }`}
+              onClick={() => setVoters(null)}
+            >
+              Semua Orang
+            </span>
+            <span
+              className={`text-sm  py-2 px-3 font-medium cursor-pointer ${
+                voters != null
+                  ? "bg-zinc-900 text-white"
+                  : "bg-zinc-100 text-zinc-700"
+              }`}
+              onClick={() => setVoters("")}
+            >
+              Orang Tertentu
+            </span>
+          </div>
+          {voters != null ? (
+            <div className="mt-5">
+              <label className="text-sm">List Email Pemilih</label>
+              <textarea
+                className="w-full border bg-zinc-100 border-transparent py-2 px-3 mt-1"
+                placeholder="List Email dipisahkan oleh tanda koma / *,* Contoh : user1@gmail.com,user2@gmail.com"
+                value={voters}
+                onChange={(e) => setVoters(e.target.value)}
+              />
+            </div>
+          ) : (
+            <div className="p-5 bg-zinc-100 mt-5 font-medium text-zinc-600">
+              Semua Orang Dengan Kode/URL ini akan dapat melakukan voting 🌻
+            </div>
+          )} */}
+
+          {/* End Pemilih */}
+          <div className="py-10 text-right">
+            <Button text="Buat Voting👍🏻" size="lg" onClick={createVote} />
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

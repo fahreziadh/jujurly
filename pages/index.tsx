@@ -3,10 +3,12 @@ import Head from "next/head";
 import Menu from "../components/Menu";
 import Image from "next/image";
 import Link from "next/link";
-
+import { useSession } from "next-auth/react";
 const Home: NextPage = () => {
+  const { data: session } = useSession();
+
   return (
-    <div className="container mx-auto h-screen">
+    <div>
       <Head>
         <title>Jujurly</title>
         <meta name="description" content="Voting App No.1 di Indonesia" />
@@ -15,7 +17,8 @@ const Home: NextPage = () => {
 
       <Menu />
 
-      <div className="flex flex-col h-full justify-center  m-auto space-y-3">
+      {/* Header */}
+      <div className="flex flex-col container mx-auto justify-center py-36 m-auto space-y-3">
         <h1 className="text-center text-5xl font-bold">Ayo Mulai Voting</h1>
         <h2 className="text-center text-lg">Web Voting No.1 Di Indonesia</h2>
         <Image
@@ -41,6 +44,38 @@ const Home: NextPage = () => {
           </Link>
         </div>
       </div>
+      {/* End Header */}
+
+      {/* List Voting */}
+      {session && (
+        <div className="container mx-auto mb-10">
+          <p className="p-5 text-lg text-center font-bold">
+            Voting Yang Saya Buat
+          </p>
+          <table className="table-auto w-full border border-zinc-100">
+            <thead>
+              <tr className="border-b border-zinc-100">
+                <th className="text-left p-5">No</th>
+                <th className="text-left p-5">Judul</th>
+                <th className="text-left p-5">Kandidat</th>
+                <th className="text-left p-5">Kode</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="p-5 text-left">1</td>
+                <td className="p-5 text-left">
+                  Pemilihan Ketua Umum Komunitas
+                </td>
+                <td className="p-5 text-left">Fahrezi (76%) vs Adha (24%)</td>
+                <td className="p-5 text-left font-bold">BVQXKRW</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* End List Voting */}
     </div>
   );
 };
