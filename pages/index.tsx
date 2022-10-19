@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import useVotes from "../lib/useVotes";
+import moment from "moment";
+import Button from "../components/Button";
+import { LinkIcon, PlayIcon } from "@heroicons/react/24/solid";
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
@@ -34,7 +37,7 @@ const Home: NextPage = () => {
         />
 
         <div className="flex flex-row items-center justify-center space-x-5">
-          <Link href="/new-vote">
+          <Link href="/vote/create">
             <a className="bg-zinc-800 text-sm font-bold text-white w-40 text-center py-3 border-2 border-transparent hover:bg-zinc-200 hover:text-zinc-800">
               Buat Vote Baru
             </a>
@@ -52,9 +55,7 @@ const Home: NextPage = () => {
       {/* List Voting */}
       {session && (
         <div className="container mx-auto mb-10">
-          <p className="p-5 text-lg text-center font-bold">
-            Voting Yang Saya Buat
-          </p>
+          <p className="p-5 text-lg  font-bold">Vote Yang Saya Buat 🗳</p>
           <table className="table-auto w-full border border-zinc-100">
             <thead>
               <tr className="border-b border-zinc-100">
@@ -62,6 +63,9 @@ const Home: NextPage = () => {
                 <th className="text-left p-5">Judul</th>
                 <th className="text-left p-5">Kandidat</th>
                 <th className="text-left p-5">Kode</th>
+                <th className="text-left p-5">Mulai</th>
+                <th className="text-left p-5">Selesai</th>
+                <th className="text-left p-5"></th>
               </tr>
             </thead>
             <tbody>
@@ -83,6 +87,23 @@ const Home: NextPage = () => {
                         )}
                       </td>
                       <td className="p-5 text-left font-bold">{vote.code}</td>
+                      <td className="p-5 text-left text-sm">
+                        {moment(vote.startDateTime).format(
+                          "DD MMM YYYY hh:mm a"
+                        )}
+                      </td>
+                      <td className="p-5 text-left text-sm">
+                        {moment(vote.endDateTime).format("DD MMM YYYY hh:mm a")}
+                      </td>
+                      <td className="p-5 text-left text-sm">
+                        <a
+                          href={`/vote/${vote.code}`}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          <LinkIcon className="w-10 h-10 p-2 hover:bg-zinc-100 rounded-md" />
+                        </a>
+                      </td>
                     </tr>
                   ))
                 : null}

@@ -1,17 +1,44 @@
-export default function CandidateItem() {
+import { CheckIcon } from "@heroicons/react/24/solid";
+
+interface Props {
+  isSelected: boolean;
+  name: string;
+  title?: string;
+  index: number;
+  percentage?: number;
+}
+
+export default function CandidateItem(props: Props) {
   return (
-    <div className="flex flex-col border border-zinc-100 p-5 shadow-md shadow-zinc-100">
-      <h1 className="flex w-1/2 bg-zinc-100 aspect-square self-center text-center justify-center items-center text-4xl rounded-full">
-        1
-      </h1>
-      <p className="font-bold text-lg text-center mt-3">Fahrezi</p>
-      <p className="text-center">Calon 1</p>
-      <button
-        onClick={() => {}}
-        className={`bg-zinc-100 text-zinc-700 hover:bg-zinc-200 hover:text-zinc-900 text-sm font-bold py-2 mt-5`}
+    <div className="flex flex-row border border-zinc-100 p-5 rounded-md shadow-zinc-100 space-x-3">
+      <div className="w-12 h-12 font-bold text-lg items-center flex justify-center bg-zinc-100 text-center">
+        {props.index}
+      </div>
+      <div className="w-full">
+        <p className="text-lg font-bold">{props.name}</p>
+        <p>{props.title}</p>
+        {/* Make Text Percentage Indicator follow bar */}
+        <div className="flex flex-row items-center space-x-2">
+          <div className="w-full h-1 bg-zinc-100 rounded-md">
+            <div
+              className="h-1 bg-zinc-800 rounded-md"
+              style={{ width: "0%" }}
+            ></div>
+          </div>
+          <p className="text-sm font-bold">{props.percentage}%</p>
+        </div>
+      </div>
+      <div
+        className={`flex w-20 aspect-square rounded-md items-center justify-center cursor-pointer ${
+          props.isSelected
+            ? "bg-green-500 hover:bg-green-600 text-white"
+            : "bg-zinc-100 hover:bg-zinc-200 "
+        }`}
       >
-        Pilih
-      </button>
+        <span>
+          <CheckIcon className="w-7 h-7" />
+        </span>
+      </div>
     </div>
   );
 }

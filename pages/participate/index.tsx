@@ -17,6 +17,7 @@ export default function Participate() {
   if (!session) {
     return <RestrictedPage />;
   }
+
   const handleSubmit = async () => {
     if (code === "") {
       alert("Please enter a code");

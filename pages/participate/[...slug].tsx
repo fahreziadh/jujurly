@@ -1,18 +1,45 @@
-import { XCircleIcon } from "@heroicons/react/24/solid";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import Countdown from "react-countdown";
+import { CountdownRendererFn } from "react-countdown/dist/Countdown";
 import Button from "../../components/Button";
-import CandidateForm from "../../components/CandidateForm";
 import CandidateItem from "../../components/CandidateItem";
+import { CountdownRenderer } from "../../components/CountDownRenderer";
 import Menu from "../../components/Menu";
-import RestrictedPage from "../../components/page/RestrictedPage";
+import useVote from "../../lib/useVote";
 
 export default function DetailParticipate() {
   const { data: session } = useSession();
+  const [selectedCandidate, setSelectedCandidate] = useState(0);
+  const router = useRouter();
+  const { slug } = router.query;
+  const { vote, isLoading, isError } = useVote(slug as string);
 
-  if (!session) {
-    return <RestrictedPage />;
-  }
+  const countDown: CountdownRendererFn = ({
+    days,
+    hours,
+    minutes,
+    seconds,
+    completed,
+  }) => {
+    if (completed) {
+      return (
+        <div className="text-center">
+          Vote telah dimulai dan akan berakhir pada :
+        </div>
+      );
+    }
+    return (
+      <CountdownRenderer
+        days={days}
+        hours={hours}
+        minutes={minutes}
+        seconds={seconds}
+      />
+    );
+  };
 
   return (
     <div className="mb-10">
@@ -22,17 +49,33 @@ export default function DetailParticipate() {
       <Menu />
 
       <div className="container mx-auto">
-        <h1 className="text-4xl mt-10 text-center">Title</h1>
-        <h1 className="mt-5 text-center">Dimulai Pada:</h1>
-        <h1 className="text-2xl font-bold mt text-center">
-          03 Jam 2 Menit 1 Detik
-        </h1>
+        <h1 className="text-4xl mt-10 text-center">{vote?.title}</h1>
 
-        <div className="grid gap-4 grid-cols-3 mt-10">
-          <CandidateItem />
-          <CandidateItem />
-          <CandidateItem />
+        {/* Timer */}
+        <h1 className=" mt-10 text-center">Dimulai Pada ⏱:</h1>
+
+        {vote && (
+          <Countdown
+            date={vote.startDateTime}
+            renderer={countDown}
+            zeroPadTime={2}
+          />
+        )}
+        {/* End Timer */}
+
+        {/* Candidate */}
+        <div className="border border-zinc-100 p-5 mt-10 space-y-3">
+          {vote?.candidates?.map((candidate: Candidate, index: number) => (
+            <CandidateItem
+              isSelected={false}
+              name={candidate.name}
+              key={candidate.key}
+              index={candidate.key}
+              title={"Kandidat " + candidate.key}
+            />
+          ))}
         </div>
+        {/* End Candidate */}
         <div className="text-center mt-10">
           <Button
             onClick={() => {}}

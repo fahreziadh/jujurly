@@ -2,7 +2,7 @@ import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
-import ReactDatePicker from "react-datepicker";
+import ReactDatePicker, { registerLocale } from "react-datepicker";
 import Button from "../../components/Button";
 import Menu from "../../components/Menu";
 import "react-datepicker/dist/react-datepicker.css";
@@ -11,6 +11,8 @@ import AddCandidateButton from "../../components/AddCandidateButton";
 import { useRouter } from "next/router";
 import Form from "../../components/Form";
 import RestrictedPage from "../../components/page/RestrictedPage";
+import id from "date-fns/locale/id";
+registerLocale("id", id);
 
 export default function NewVote() {
   const { data: session } = useSession();
@@ -87,11 +89,11 @@ export default function NewVote() {
     })
       .then((res) => res.json())
       .then((data) => {
-        router.push("/new-vote/success");
+        router.push("/vote/success");
       });
   };
 
-  //Jika user sudah login, maka akan ditampilkan halaman new-vote
+  //Jika user sudah login, maka akan ditampilkan halaman vote
   return (
     <div>
       <Head>
@@ -102,7 +104,7 @@ export default function NewVote() {
       <div className="container mx-auto py-10">
         <Image
           src={"/images/vote.png"}
-          alt="new-vote"
+          alt="vote"
           width={200}
           height={200}
           objectFit="contain"
@@ -129,6 +131,7 @@ export default function NewVote() {
               <label className="text-sm">Kapan dimulai?</label>
               <div className="inline-flex">
                 <ReactDatePicker
+                  locale={"id"}
                   showTimeSelect
                   dateFormat="Pp"
                   selected={startDate}
@@ -138,6 +141,7 @@ export default function NewVote() {
                 />
                 <span className="text-sm text-center p-3">sampai</span>
                 <ReactDatePicker
+                  locale={"id"}
                   dateFormat="Pp"
                   showTimeSelect
                   selected={endDate}

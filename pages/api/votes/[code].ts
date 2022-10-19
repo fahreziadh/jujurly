@@ -16,7 +16,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     if (req.method === "GET") {
         const result = await prisma.votes.findFirst({
             where: {
-                code: code
+                code: code as string,
             }
         })
         return res.json(result)

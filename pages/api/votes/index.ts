@@ -12,6 +12,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         return;
     }
 
+    // Create New Votes
     if (req.method === "POST") {
         const result = await prisma.votes.create({
             data: {
@@ -27,12 +28,31 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
         return res.json(result)
     }
+
+    // Get All Votes by User
     else if (req.method === "GET") {
         const result = await prisma.votes.findMany({
             where: {
                 publisher: session.user.email
             }
         })
+        return res.json(result)
+    }
+
+    // Update Votes
+    else if (req.method === "PUT") {
+        const result = await prisma.votes.update({
+            where: {
+                code: req.body.code
+            },
+            data: {
+                candidates: req.body.candidates,
+                endDateTime: req.body.endDate,
+                startDateTime: req.body.startDate,
+                title: req.body.title,
+            }
+        })
+
         return res.json(result)
     }
 
