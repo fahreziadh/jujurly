@@ -3,11 +3,13 @@ interface Props {
   text: string;
   size?: "sm" | "md" | "lg";
   className?: string;
+  isLoading?: boolean;
 }
 
 export default function Button(props: Props) {
   return (
     <button
+      disabled={props.isLoading}
       onClick={(e) => {
         e.preventDefault();
         props.onClick();
@@ -22,7 +24,7 @@ export default function Button(props: Props) {
           : "py-2 px-3"
       }`}
     >
-      {props.text}
+      {props.isLoading ? "Loading..." : props.text}
     </button>
   );
 }

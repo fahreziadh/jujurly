@@ -4,15 +4,16 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import ReactDatePicker, { registerLocale } from "react-datepicker";
-import AddCandidateButton from "../../components/AddCandidateButton";
+import AddCandidateButton from "../../../components/AddCandidateButton";
 import "react-datepicker/dist/react-datepicker.css";
 
-import Button from "../../components/Button";
-import CandidateForm from "../../components/CandidateForm";
-import Form from "../../components/Form";
-import RestrictedPage from "../../components/page/RestrictedPage";
-import useVote from "../../lib/useVote";
+import Button from "../../../components/Button";
+import CandidateForm from "../../../components/CandidateForm";
+import Form from "../../../components/Form";
+import RestrictedPage from "../../../components/page/RestrictedPage";
+import useVote from "../../../lib/useVote";
 import id from "date-fns/locale/id";
+import Link from "next/link";
 registerLocale("id", id);
 
 export default function DetailOrEditVotes() {
@@ -102,7 +103,7 @@ export default function DetailOrEditVotes() {
     })
       .then((res) => res.json())
       .then((data) => {
-        router.push("/vote/success");
+        alert("Berhasil mengubah vote");
       });
   };
 
@@ -205,6 +206,9 @@ export default function DetailOrEditVotes() {
           </div>
           {/* End Kode */}
           <div className="py-10 text-right">
+            <Link href="/">
+              <a className="text-sm mr-3 hover:text-zinc-500">Kembali</a>
+            </Link>
             <Button text="Update Voting👍🏻" size="lg" onClick={updateVote} />
           </div>
         </form>

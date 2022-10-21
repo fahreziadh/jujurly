@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import moment from "moment";
+import { zeroPad } from "react-countdown";
 
 interface Props {
   days: number;
@@ -15,7 +15,7 @@ const CountDownItem = ({ label, value }: ItemProps) => {
   return (
     <div className="flex items-center">
       <div className="flex flex-col text-center">
-        <span className="text-5xl font-bold">{value}</span>
+        <span className="text-5xl font-bold">{zeroPad(value, 2)}</span>
         <span className="font-light text-xl">{label}</span>
       </div>
       {label !== "Detik" && <span className="mx-5 text-4xl">:</span>}

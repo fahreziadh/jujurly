@@ -1,14 +1,19 @@
+import moment from "moment";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import Countdown from "react-countdown";
+import { useEffect, useState } from "react";
 import { CountdownRendererFn } from "react-countdown/dist/Countdown";
 import Button from "../../components/Button";
 import CandidateItem from "../../components/CandidateItem";
-import { CountdownRenderer } from "../../components/CountDownRenderer";
+import CountDown from "../../components/countdown/CountDown";
 import Menu from "../../components/Menu";
 import useVote from "../../lib/useVote";
+
+export const STATE_NOT_STARTED = "STATE_NOT_STARTED",
+  STATE_STARTED = "STATE_STARTED",
+  STATE_ENDED = "STATE_ENDED",
+  STATE_LOADING = "STATE_LOADING";
 
 export default function DetailParticipate() {
   const { data: session } = useSession();
@@ -17,29 +22,31 @@ export default function DetailParticipate() {
   const { slug } = router.query;
   const { vote, isLoading, isError } = useVote(slug as string);
 
-  const countDown: CountdownRendererFn = ({
-    days,
-    hours,
-    minutes,
-    seconds,
-    completed,
-  }) => {
-    if (completed) {
-      return (
-        <div className="text-center">
-          Vote telah dimulai dan akan berakhir pada :
-        </div>
-      );
+  const [currentState, setCurrentState] = useState(STATE_LOADING);
+
+  useEffect(() => {
+    if (vote) {
+      if (currentState === STATE_ENDED) {
+        return;
+      }
+      const start = moment(vote?.startDateTime);
+      const end = moment(vote?.endDateTime);
+
+      const interval = setInterval(async () => {
+        const now = moment();
+
+        if (now.isBefore(start)) {
+          setCurrentState(STATE_NOT_STARTED);
+        } else if (now.isAfter(start) && now.isBefore(end)) {
+          setCurrentState(STATE_STARTED);
+        } else if (now.isAfter(end)) {
+          setCurrentState(STATE_ENDED);
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
     }
-    return (
-      <CountdownRenderer
-        days={days}
-        hours={hours}
-        minutes={minutes}
-        seconds={seconds}
-      />
-    );
-  };
+  }, [vote]);
 
   return (
     <div className="mb-10">
@@ -50,21 +57,18 @@ export default function DetailParticipate() {
 
       <div className="container mx-auto">
         <h1 className="text-4xl mt-10 text-center">{vote?.title}</h1>
-
         {/* Timer */}
-        <h1 className=" mt-10 text-center">Dimulai Pada ⏱:</h1>
-
-        {vote && (
-          <Countdown
-            date={vote.startDateTime}
-            renderer={countDown}
-            zeroPadTime={2}
+        {vote?.startDateTime && vote?.endDateTime && (
+          <CountDown
+            start={vote?.startDateTime}
+            end={vote?.endDateTime}
+            currentState={currentState}
           />
         )}
         {/* End Timer */}
 
         {/* Candidate */}
-        <div className="border border-zinc-100 p-5 mt-10 space-y-3">
+        <div className="p-5 mt-10 space-y-3 w-2/3 mx-auto">
           {vote?.candidates?.map((candidate: Candidate, index: number) => (
             <CandidateItem
               isSelected={false}

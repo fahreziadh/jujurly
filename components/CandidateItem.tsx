@@ -10,7 +10,7 @@ interface Props {
 
 export default function CandidateItem(props: Props) {
   return (
-    <div className="flex flex-row border border-zinc-100 p-5 rounded-md shadow-zinc-100 space-x-3">
+    <div className="flex flex-row border border-zinc-100 p-5 rounded-md space-x-3">
       <div className="w-12 h-12 font-bold text-lg items-center flex justify-center bg-zinc-100 text-center">
         {props.index}
       </div>

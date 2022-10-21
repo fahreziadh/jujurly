@@ -10,7 +10,7 @@ module.exports = {
     container: {
       padding: {
         DEFAULT: '2rem',
-        lg: '14rem',
+        lg: '8rem',
       }
     },
     extend: {

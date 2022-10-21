@@ -23,6 +23,7 @@ export default function NewVote() {
   const [endDate, setEndDate] = useState(new Date()); //tanggal selesai
   const [candidates, setCandidates] = useState<Candidate[]>([]); //list kandidat
   const [title, setTitle] = useState(""); //judul vote
+  const [loading, setLoading] = useState(false); //loading
 
   //Jika user belum login, maka akan diarahkan ke halaman login
   if (!session) return <RestrictedPage />;
@@ -73,6 +74,7 @@ export default function NewVote() {
       return;
     }
 
+    setLoading(true);
     //Mengirim data ke API
     fetch("/api/votes", {
       method: "POST",
@@ -90,6 +92,9 @@ export default function NewVote() {
       .then((res) => res.json())
       .then((data) => {
         router.push("/vote/success");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
