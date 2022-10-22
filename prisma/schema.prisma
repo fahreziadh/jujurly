@@ -22,5 +22,6 @@ model votes {
   title         String
   voters        String[]
   createdAt     DateTime    @default(now()) @map("createdAt") @db.Date
+  deletedAt     String?     
   code          String      @unique
 }

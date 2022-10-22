@@ -17,6 +17,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         const result = await prisma.votes.findFirst({
             where: {
                 code: code as string,
+                deletedAt: undefined
             }
         })
         return res.json(result)

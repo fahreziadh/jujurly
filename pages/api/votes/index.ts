@@ -23,6 +23,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
                 voters: undefined,
                 publisher: req.body.publisher,
                 code: code(6),
+                deletedAt: undefined,
             }
         })
 
@@ -33,7 +34,8 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     else if (req.method === "GET") {
         const result = await prisma.votes.findMany({
             where: {
-                publisher: session.user.email
+                publisher: session.user.email,
+                deletedAt: undefined
             }
         })
         return res.json(result)
