@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import Form from "../../components/Form";
 import RestrictedPage from "../../components/page/RestrictedPage";
 import id from "date-fns/locale/id";
+import { showAlert } from "../../components/Alert";
 registerLocale("id", id);
 
 export default function NewVote() {
@@ -58,19 +59,19 @@ export default function NewVote() {
   const createVote = () => {
     //Validasi
     if (title === "") {
-      alert("Judul tidak boleh kosong");
+      showAlert({title:"Hmmh",subtitle:"Judul tidak boleh kosong"});
       return;
     }
     if (candidates.length < 2) {
-      alert("Minimal ada 2 kandidat");
+      showAlert({title:"Hmmh",subtitle:"Minimal ada 2 kandidat"});
       return;
     }
     if (startDate > endDate) {
-      alert("Tanggal mulai tidak boleh lebih besar dari tanggal selesai");
+      showAlert({title:"Hmmh",subtitle:"Tanggal mulai tidak boleh lebih besar dari tanggal selesai"});
       return;
     }
     if (candidates.some((c) => c.name === "")) {
-      alert("Nama Kandidat tidak boleh kosong");
+      showAlert({title:"Hmmh",subtitle:"Nama Kandidat tidak boleh kosong"});
       return;
     }
 

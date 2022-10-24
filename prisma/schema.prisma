@@ -13,15 +13,21 @@ type Candidate {
   title String
 }
 
+type Participant {
+  email         String
+  participateAt DateTime @default(now()) @db.Date
+  choice        Candidate
+}
+
 model votes {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
   candidates    Candidate[]
-  endDateTime   DateTime    @db.Date
+  endDateTime   DateTime      @db.Date
   publisher     String
-  startDateTime DateTime    @db.Date
+  startDateTime DateTime      @db.Date
   title         String
-  voters        String[]
-  createdAt     DateTime    @default(now()) @map("createdAt") @db.Date
-  deletedAt     String?     
-  code          String      @unique
+  participants  Participant[]
+  createdAt     DateTime      @default(now()) @map("createdAt") @db.Date
+  deletedAt     String?
+  code          String        @unique
 }

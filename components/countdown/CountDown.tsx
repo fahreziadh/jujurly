@@ -6,7 +6,7 @@ import {
   STATE_ENDED,
   STATE_NOT_STARTED,
   STATE_STARTED,
-} from "../../pages/participate/[...slug]";
+} from "../../pages/participant/[...slug]";
 import { CountdownRenderer } from "./CountDownRenderer";
 
 interface Props {

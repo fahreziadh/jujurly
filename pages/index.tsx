@@ -6,13 +6,50 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import useVotes from "../lib/useVotes";
 import moment from "moment";
-import Button from "../components/Button";
-import { LinkIcon, PlayIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { LinkIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Loading from "../components/Loading";
+import { showAlert } from "../components/Alert";
+import { useEffect, useState } from "react";
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
-  const { votes, isLoading } = useVotes();
+  const { votes:votesApi, isLoading: voteLoading } = useVotes();
+
+  const [votes, setVotes] = useState<Votes[]>();
+  useEffect(() => {
+    if (votesApi) {
+      setVotes(votesApi);
+    }
+  }, [votesApi]);
+
+  const [loadingItem, setLoadingItem] = useState<string|null>(null);
+
+  const handleDelete = (code: string) => {
+    showAlert({
+      title: "Anda Yakin?",
+      subtitle: "ingin menghapus data ini?",
+      onPositiveClick: () => {
+        setLoadingItem(code);
+        fetch(`/api/votes/${code}`, {
+          method: "DELETE",
+        }).then(() => {
+            showAlert({
+              title: "Berhasil",
+              subtitle: "Data berhasil dihapus",
+            })
+            setVotes(votes?.filter((vote) => vote.code !== code));
+          }).catch(() => {
+            showAlert({
+              title: "Gagal",
+              subtitle: "Data gagal dihapus",
+            })
+          }).finally(() => {
+            setLoadingItem(null);
+          });
+      },
+    })
+  }
+
   return (
     <div>
       <Head>
@@ -20,9 +57,7 @@ const Home: NextPage = () => {
         <meta name="description" content="Voting App No.1 di Indonesia" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Menu />
-
       {/* Header */}
       <div className="flex flex-col container mx-auto justify-center py-44 m-auto space-y-3">
         <h1 className="text-center text-5xl font-bold">Ayo Mulai Voting</h1>
@@ -48,7 +83,7 @@ const Home: NextPage = () => {
             </a>
           </Link>
           <span>atau</span>
-          <Link href="/participate">
+          <Link href="/participant">
             <a className="bg-white text-sm font-bold text-zinc-800  border-zinc-800 border-2 w-40 text-center py-3 hover:bg-zinc-800 hover:text-white">
               Ikutan Vote
             </a>
@@ -61,8 +96,7 @@ const Home: NextPage = () => {
       {session && (
         <div className="container mx-auto mb-10">
           <p className="p-5 text-lg  font-bold">Vote Yang Saya Buat 🗳</p>
-          {isLoading && <Loading />}
-          {votes && votes.length > 0 ? (
+          {voteLoading ? <Loading /> : (votes && votes.length > 0 ?
             <table className="table-auto w-full border border-zinc-100">
               <thead>
                 <tr className="border-b border-zinc-100">
@@ -76,8 +110,8 @@ const Home: NextPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {votes?.map((vote: any, index: number) => (
-                  <tr key={index}>
+                {votes?.map((vote: Votes, index: number) => (
+                  <tr key={index} className={`${vote.code===loadingItem && "animate-pulse"}`}>
                     <td className="p-5 text-left">{index + 1}</td>
                     <td className="p-5 text-left font-medium text-blue-500">
                       <a
@@ -105,29 +139,22 @@ const Home: NextPage = () => {
                     </td>
                     <td className="p-5 text-left text-sm">
                       <a
-                        href={`/participate/${vote.code}`}
+                        href={`/participant/${vote.code}`}
                         target="_blank"
                         rel="noreferrer noopener"
                       >
                         <LinkIcon className="w-8 h-8 p-2 hover:bg-zinc-100 rounded-md" />
                       </a>
-                      <a
-                        href={`/participate/${vote.code}`}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
+                      <button onClick={() => handleDelete(vote.code)} >
                         <TrashIcon className="w-8 h-8 p-2 hover:bg-zinc-100 rounded-md" />
-                      </a>
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
-            </table>
-          ) : (
-            <div className="text-center bg-zinc-100 p-5 font-medium">
+            </table> : (<div className="text-center bg-zinc-100 p-5 font-medium">
               Belum ada Votes yang dibuat
-            </div>
-          )}
+            </div>))}
         </div>
       )}
       {/* End List Voting */}

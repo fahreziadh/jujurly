@@ -6,6 +6,7 @@ interface Props {
   title?: string;
   index: number;
   percentage?: number;
+  onClick?: () => void;
 }
 
 export default function CandidateItem(props: Props) {
@@ -29,6 +30,7 @@ export default function CandidateItem(props: Props) {
         </div>
       </div>
       <div
+        onClick={props.onClick}
         className={`flex w-20 aspect-square rounded-md items-center justify-center cursor-pointer ${
           props.isSelected
             ? "bg-green-500 hover:bg-green-600 text-white"

@@ -17,15 +17,6 @@ export default function CandidateForm(props: Props) {
     setCandidate(props.candidate);
   }, [props.candidate]);
 
-  const onSubmit = (e: any) => {
-    e.preventDefault();
-    if (candidate.name === "") {
-      alert("Nama Tidak Boleh Kosong");
-      return;
-    }
-    props.submitCandidate(candidate);
-  };
-
   useEffect(() => {
     //SubmitCandidate
     props.submitCandidate(candidate);

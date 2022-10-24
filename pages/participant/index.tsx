@@ -3,11 +3,12 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { showAlert } from "../../components/Alert";
 import Button from "../../components/Button";
 import Form from "../../components/Form";
 import RestrictedPage from "../../components/page/RestrictedPage";
 
-export default function Participate() {
+export default function Participant() {
   const router = useRouter();
 
   const { data: session } = useSession();
@@ -20,7 +21,7 @@ export default function Participate() {
 
   const handleSubmit = async () => {
     if (code === "") {
-      alert("Please enter a code");
+      showAlert({title:"Hmmh..",subtitle:"Tolong masukkan kode yang benar",});
       return;
     }
     await fetch("/api/votes/" + code, {
@@ -29,10 +30,10 @@ export default function Participate() {
       .then((res) => res.json())
       .then((data) => {
         if (!data) {
-          alert("Invalid Code");
+          showAlert({title:"Hmmh..",subtitle:"Kode yang anda masukkan salah",});
           return;
         }
-        router.push("/participate/" + code);
+        router.push("/participant/" + code);
       });
   };
 

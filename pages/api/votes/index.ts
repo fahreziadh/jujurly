@@ -3,6 +3,7 @@ import { prisma } from "../../../lib/prisma";
 import { unstable_getServerSession } from "next-auth/next"
 import { authOptions } from "../auth/[...nextauth]"
 import { code } from "../../../lib/code";
+import { notEqual } from "assert";
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
     const session = await unstable_getServerSession(req, res, authOptions)
@@ -23,7 +24,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
                 voters: undefined,
                 publisher: req.body.publisher,
                 code: code(6),
-                deletedAt: undefined,
+                deletedAt: null,
             }
         })
 
@@ -34,8 +35,10 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     else if (req.method === "GET") {
         const result = await prisma.votes.findMany({
             where: {
-                publisher: session.user.email,
-                deletedAt: undefined
+                AND: [
+                    { deletedAt: null},
+                    { publisher: session.user.email },
+                ]
             }
         })
         return res.json(result)

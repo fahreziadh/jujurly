@@ -14,6 +14,7 @@ import RestrictedPage from "../../../components/page/RestrictedPage";
 import useVote from "../../../lib/useVote";
 import id from "date-fns/locale/id";
 import Link from "next/link";
+import { showAlert } from "../../../components/Alert";
 registerLocale("id", id);
 
 export default function DetailOrEditVotes() {
@@ -69,20 +70,20 @@ export default function DetailOrEditVotes() {
 
   const updateVote = () => {
     //Validasi
-    if (title === "") {
-      alert("Judul tidak boleh kosong");
+     if (title === "") {
+      showAlert({title:"Hmmh",subtitle:"Judul tidak boleh kosong"});
       return;
     }
     if (candidates.length < 2) {
-      alert("Minimal ada 2 kandidat");
+      showAlert({title:"Hmmh",subtitle:"Minimal ada 2 kandidat"});
       return;
     }
     if (startDate > endDate) {
-      alert("Tanggal mulai tidak boleh lebih besar dari tanggal selesai");
+      showAlert({title:"Hmmh",subtitle:"Tanggal mulai tidak boleh lebih besar dari tanggal selesai"});
       return;
     }
     if (candidates.some((c) => c.name === "")) {
-      alert("Nama Kandidat tidak boleh kosong");
+      showAlert({title:"Hmmh",subtitle:"Nama Kandidat tidak boleh kosong"});
       return;
     }
 
@@ -103,7 +104,7 @@ export default function DetailOrEditVotes() {
     })
       .then((res) => res.json())
       .then((data) => {
-        alert("Berhasil mengubah vote");
+        showAlert({title:"Yay!",subtitle:"Vote berhasil diubah"});
       });
   };
 
@@ -195,7 +196,7 @@ export default function DetailOrEditVotes() {
             <p>
               Atau gunalan link berikut :{" "}
               <a
-                href={`/participate/${vote?.code}`}
+                href={`/participant/${vote?.code}`}
                 target="_blank"
                 rel="noreferrer noopener"
                 className="text-blue-500"
