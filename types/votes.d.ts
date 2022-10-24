@@ -1,5 +1,5 @@
 interface Votes {
-    _id: string;
+    id: string;
     publisher: string;
     title: string;
     code: string;
