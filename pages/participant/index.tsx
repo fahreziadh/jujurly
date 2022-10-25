@@ -50,7 +50,7 @@ export default function Participant() {
         objectFit="contain"
       />
       <h1 className="text-4xl font-bold">Ikutan Voting </h1>
-      <h2 className="w-1/2 text-center">
+      <h2 className="w-full lg:w-1/2 text-center">
         Untuk ikutan voting, kamu harus memasukkan kode voting yang sudah di
         berikan panitia/penyelenggara
       </h2>
@@ -58,7 +58,7 @@ export default function Participant() {
         placeholder="Masukkan Kode Voting"
         value={code}
         onChange={setCode}
-        className="w-1/3 mt-3"
+        className="w-full lg:w-1/3 mt-3"
       />
       <Button
         onClick={handleSubmit}
