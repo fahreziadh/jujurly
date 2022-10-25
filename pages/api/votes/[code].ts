@@ -15,7 +15,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     // Get Details of the Vote
     if (req.method === "GET") {
-        const result = await prisma.votes.findFirst({
+        const votes = await prisma.votes.findFirst({
             select:{
                 id: true,
                 publisher: true,
@@ -25,7 +25,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
                 endDateTime: true,
                 candidates: true,
                 createdAt: true,
-                participants: false,
                 deletedAt: false
             },
             where: {
@@ -33,8 +32,51 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
                 deletedAt: null
             }
         })
-        return res.json(result)
+       
+        // Get Participants of the Vote
+        const participants = await prisma.participant.findMany({
+            select:{
+                candidate:true,
+                email: true,
+                participateAt: true,
+            },
+            where: {
+                code: code as string,
+            }
+        })
+
+        //Count Vote for each Candidate
+        var candidates : Candidate[] = []; 
+        if(participants){
+            candidates = votes?.candidates.map(candidate => { 
+                const votes = participants.filter(participant => participant.candidate === candidate.name).length || 0;
+                return {
+                    ...candidate,
+                    votes
+                }
+            }) as Candidate[]
+        }
+
+    const result = {
+            id: votes?.id,
+            publisher: votes?.publisher,
+            title: votes?.title,
+            code: votes?.code,
+            candidates: candidates,
+            startDateTime: String(votes?.startDateTime),
+            endDateTime: String(votes?.endDateTime),
+            createdAt: String(votes?.createdAt),
+            totalVotes: candidates ? candidates?.reduce((acc, candidate) => acc + (candidate.votes ? candidate.votes :0), 0) : 0
+        } as Votes;
+
+        const response = {
+            status: 200,
+            data: result,
+        }
+
+        return res.json(response)
     }
+
 
     // Delete the Vote
     if (req.method === "DELETE") {

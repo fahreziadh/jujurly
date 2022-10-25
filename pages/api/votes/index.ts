@@ -21,7 +21,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
                 endDateTime: req.body.endDate,
                 startDateTime: req.body.startDate,
                 title: req.body.title,
-                voters: undefined,
                 publisher: req.body.publisher,
                 code: code(6),
                 deletedAt: null,
@@ -41,7 +40,12 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
                 ]
             }
         })
-        return res.json(result)
+        
+        const response = {
+            status: 200,
+            data: result,
+        }
+        return res.json(response)
     }
 
     // Update Votes

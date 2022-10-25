@@ -12,23 +12,32 @@ export default async function handle(req:NextApiRequest, res:NextApiResponse) {
     }
     const { code } = req.query;
 
-    // Get Participant Details
+    // Get Participant Details  
     if (req.method === "GET") {
-        const result = await prisma.votes.findFirst({
+        const result = await prisma.participant.findFirst({
             where: {
-                code: code as string,
-                deletedAt: null,
-                participants:{
-                    some:{
-                        email: session.user.email
-                    }
-
+                    code: code as string,
+                    email: session.user.email
                 }
-            }
         })
-        return res.json(result?.participants[0])
+        const response = {
+            status: 200,
+            data: result,
+        }
+        return res.status(200).json(response)
     }
 
+    // Add Participant
+    if (req.method === "POST") {
+        const result = await prisma.participant.create({
+            data: {
+                   candidate: req.body.candidate,
+                   email: session.user.email,
+                   code: code as string
+            }
+        })
+        return res.json(result)
+    }
 
     return res.json({ message: "Hi" })
 }

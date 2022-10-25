@@ -98,7 +98,12 @@ export default function DetailOrEditVotes() {
         title,
         startDate,
         endDate,
-        candidates,
+        //candidates with no votes
+        candidates: candidates.map((c) => ({
+          name: c.name,
+          title: c.title,
+          key : c.key
+        })),
         publisher: session.user.email,
       }),
     })

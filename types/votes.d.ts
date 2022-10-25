@@ -7,4 +7,5 @@ interface Votes {
     endDateTime: string;
     candidates: Candidate[];
     createdAt: string;
+    totalVotes: number;
 }

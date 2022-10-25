@@ -23,10 +23,10 @@ export default function CandidateItem(props: Props) {
           <div className="w-full h-1 bg-zinc-100 rounded-md">
             <div
               className="h-1 bg-zinc-800 rounded-md"
-              style={{ width: "0%" }}
+              style={{ width: `${props.percentage}%` }}
             ></div>
           </div>
-          <p className="text-sm font-bold">{props.percentage}%</p>
+          <p className="text-sm font-bold">{Intl.NumberFormat('en',{notation:"compact"}).format(props.percentage || 0)}%</p>
         </div>
       </div>
       <div
