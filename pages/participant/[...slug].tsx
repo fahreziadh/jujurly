@@ -124,7 +124,7 @@ export default function DetailParticipate() {
         {/* End Timer */}
 
         {/* Candidate */}
-        <div className="p-5 mt-10 space-y-3 w-2/3 mx-auto">
+        <div className="lg:p-5 mt-10 space-y-3 w-full lg:w-2/3 mx-auto">
           {!participantLoading && vote?.candidates?.map((candidate: Candidate, index: number) => (
             <CandidateItem
               onClick={() => !participant && currentState === STATE_STARTED && setSelectedCandidate(candidate)}
