@@ -53,7 +53,7 @@ export default function Participant() {
       <h2 className="w-full lg:w-1/2 text-center">
         Untuk ikutan voting, kamu harus memasukkan kode voting yang sudah di
         berikan panitia/penyelenggara
-      </h2>
+      </h2> 
       <Form
         placeholder="Masukkan Kode Voting"
         value={code}
